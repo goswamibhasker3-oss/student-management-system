@@ -26,10 +26,31 @@ Built as a portfolio project by **Bhaskar Goswami** (B.Sc. Information Technolog
 - Python 3.11+
 - MySQL 8.0+
 
-### 1. Clone & setup
-```bash
-git clone https://github.com/your-username/student-management-system.git
+### Setup on Windows PowerShell
+1. Install and start MySQL Server 8.0. The setup script creates the database, so the configured MySQL user must have permission to create databases.
+2. Clone the project and enter its folder:
+```powershell
+git clone https://github.com/goswamibhasker3-oss/student-management-system.git
 cd student-management-system
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+```
+3. Create and activate a virtual environment, then install dependencies:
+```powershell
+python -m venv .venv
+& .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+```
+If PowerShell blocks activation, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned` in that terminal, then activate again.
+
+4. Create `.env` from the example if it does not already exist, then set your local MySQL credentials:
+```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```
+5. Initialize the database and create your admin account. The password is entered privately in the terminal and must be at least 12 characters:
+```powershell
+python seed.py
+```
+6. Start the app:
+```powershell
+python app.py
+```
+Open <http://127.0.0.1:5000> and sign in with the admin username and password you created.
