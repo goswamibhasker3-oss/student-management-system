@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In · StudentMS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="login-body">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-mark big">S</div>
+        <h1>Welcome back</h1>
+        <p>Sign in to StudentMS to continue.</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-stack">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}"><span>{{ message }}</span></div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="login-form" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="field">
+          {{ form.username.label }}
+          {{ form.username(class="input", placeholder="admin", autofocus=true) }}
+          {% for err in form.username.errors %}<span class="error">{{ err }}</span>{% endfor %}
+        </div>
+
+        <div class="field">
+          {{ form.password.label }}
+          {{ form.password(class="input", placeholder="••••••••") }}
+          {% for err in form.password.errors %}<span class="error">{{ err }}</span>{% endfor %}
+        </div>
+
+        <label class="checkbox">
+          {{ form.remember() }}
+          <span>Remember me</span>
+        </label>
+
+        {{ form.submit(class="btn btn-primary btn-block") }}
+      </form>
+
+      <p class="login-hint">
+        <strong>Demo credentials:</strong> admin / admin123
+      </p>
+    </div>
+    <p class="login-footer">© 2025 · Bhaskar Goswami · B.Sc. IT</p>
+  </div>
+</body>
+</html>

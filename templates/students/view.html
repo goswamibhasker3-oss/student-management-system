@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ student.first_name }} {{ student.last_name }}{% endblock %}
+{% block page_title %}Student Profile{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('students.edit', student_id=student.id) }}" class="btn btn-primary">Edit</a>
+  <a href="{{ url_for('students.index') }}" class="btn btn-ghost">Back</a>
+{% endblock %}
+
+{% block content %}
+<section class="card profile-card">
+  <div class="profile-head">
+    <div class="avatar lg">{{ student.first_name[0]|upper }}</div>
+    <div>
+      <h2>{{ student.first_name }} {{ student.last_name }}</h2>
+      <p class="muted">
+        <code>{{ student.roll_no }}</code> ·
+        <span class="badge badge-{{ student.status }}">{{ student.status }}</span>
+      </p>
+    </div>
+  </div>
+
+  <dl class="profile-grid">
+    <div><dt>Email</dt><dd>{{ student.email }}</dd></div>
+    <div><dt>Phone</dt><dd>{{ student.phone or '—' }}</dd></div>
+    <div><dt>Gender</dt><dd>{{ student.gender }}</dd></div>
+    <div><dt>Date of Birth</dt><dd>{{ student.dob.strftime('%d %b %Y') if student.dob else '—' }}</dd></div>
+    <div>
+      <dt>Course</dt>
+      <dd>
+        {% if student.course_code %}
+          <span class="chip">{{ student.course_code }}</span> {{ student.course_name }}
+        {% else %}
+          <span class="muted">Not assigned</span>
+        {% endif %}
+      </dd>
+    </div>
+    <div>
+      <dt>Registered</dt>
+      <dd>{{ student.created_at.strftime('%d %b %Y, %H:%M') if student.created_at else '—' }}</dd>
+    </div>
+    <div class="full"><dt>Address</dt><dd>{{ student.address or '—' }}</dd></div>
+  </dl>
+
+  <form method="POST" action="{{ url_for('students.delete', student_id=student.id) }}" class="danger-zone">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <button type="submit" class="btn btn-danger"
+            data-confirm="Delete this student permanently?">Delete Student</button>
+  </form>
+</section>
+{% endblock %}

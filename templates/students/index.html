@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('students.create') }}" class="btn btn-primary">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add Student
+  </a>
+{% endblock %}
+
+{% block content %}
+<section class="card">
+  <form method="GET" class="filters" id="filterForm">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" name="q" value="{{ q }}" placeholder="Search by name, roll no, email…" class="input" />
+    </div>
+
+    <select name="status" class="input">
+      <option value="">All statuses</option>
+      <option value="active"    {{ 'selected' if status == 'active' }}>Active</option>
+      <option value="inactive"  {{ 'selected' if status == 'inactive' }}>Inactive</option>
+      <option value="graduated" {{ 'selected' if status == 'graduated' }}>Graduated</option>
+    </select>
+
+    <select name="course_id" class="input">
+      <option value="0">All courses</option>
+      {% for c in courses %}
+        <option value="{{ c.id }}" {{ 'selected' if course_id == c.id }}>{{ c.code }} · {{ c.name }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-secondary">Filter</button>
+    <a href="{{ url_for('students.index') }}" class="btn btn-ghost">Reset</a>
+  </form>
+
+  <div class="result-info">
+    Showing <strong>{{ students|length }}</strong> of <strong>{{ total }}</strong> student(s).
+  </div>
+
+  {% if students %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Roll No</th>
+            <th>Course</th>
+            <th>Status</th>
+            <th class="right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td>
+              <a href="{{ url_for('students.view', student_id=s.id) }}" class="student-cell">
+                <span class="avatar sm">{{ s.first_name[0]|upper }}</span>
+                <span>
+                  <strong>{{ s.first_name }} {{ s.last_name }}</strong>
+                  <small>{{ s.email }}</small>
+                </span>
+              </a>
+            </td>
+            <td><code>{{ s.roll_no }}</code></td>
+            <td>
+              {% if s.course_code %}
+                <span class="chip">{{ s.course_code }}</span>
+              {% else %}
+                <span class="muted">—</span>
+              {% endif %}
+            </td>
+            <td><span class="badge badge-{{ s.status }}">{{ s.status }}</span></td>
+            <td class="right actions">
+              <a href="{{ url_for('students.view', student_id=s.id) }}" class="icon-btn" title="View">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </a>
+              <a href="{{ url_for('students.edit', student_id=s.id) }}" class="icon-btn" title="Edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </a>
+              <form method="POST" action="{{ url_for('students.delete', student_id=s.id) }}" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button type="submit" class="icon-btn danger" title="Delete"
+                        data-confirm="Delete {{ s.first_name }} {{ s.last_name }}?">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if total_pages > 1 %}
+      <nav class="pagination">
+        {% set base_args = {'q': q, 'status': status, 'course_id': course_id or None} %}
+        <a class="page-btn {{ 'disabled' if page <= 1 }}"
+           href="{{ url_for('students.index', page=page-1, **base_args) if page > 1 else '#' }}">← Prev</a>
+
+        <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
+
+        <a class="page-btn {{ 'disabled' if page >= total_pages }}"
+           href="{{ url_for('students.index', page=page+1, **base_args) if page < total_pages else '#' }}">Next →</a>
+      </nav>
+    {% endif %}
+  {% else %}
+    <p class="empty">No students match your filters. <a href="{{ url_for('students.create') }}">Add a student →</a></p>
+  {% endif %}
+</section>
+{% endblock %}

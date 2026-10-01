@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{{ url_for('students.create') }}" class="btn btn-primary">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add Student
+  </a>
+{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon stat-blue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    </div>
+    <div class="stat-body">
+      <span class="stat-label">Total Students</span>
+      <strong class="stat-value">{{ total_students }}</strong>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-purple">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+    <div class="stat-body">
+      <span class="stat-label">Total Courses</span>
+      <strong class="stat-value">{{ total_courses }}</strong>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-green">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </div>
+    <div class="stat-body">
+      <span class="stat-label">Active Students</span>
+      <strong class="stat-value">{{ active_students }}</strong>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon stat-orange">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="stat-body">
+      <span class="stat-label">Recent Registrations</span>
+      <strong class="stat-value">{{ recent|length }}</strong>
+    </div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <header class="card-head">
+      <h2>Recent Registrations</h2>
+      <a href="{{ url_for('students.index') }}" class="link">View all →</a>
+    </header>
+
+    {% if recent %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Roll No</th>
+              <th>Course</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in recent %}
+            <tr>
+              <td>
+                <a href="{{ url_for('students.view', student_id=s.id) }}" class="student-cell">
+                  <span class="avatar sm">{{ s.first_name[0]|upper }}</span>
+                  <span>
+                    <strong>{{ s.first_name }} {{ s.last_name }}</strong>
+                    <small>{{ s.email }}</small>
+                  </span>
+                </a>
+              </td>
+              <td><code>{{ s.roll_no }}</code></td>
+              <td>{{ s.course_code or '—' }}</td>
+              <td><span class="badge badge-{{ s.status }}">{{ s.status }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty">No students yet. <a href="{{ url_for('students.create') }}">Add one →</a></p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <header class="card-head">
+      <h2>Enrollment per Course</h2>
+    </header>
+    {% if course_stats %}
+      <ul class="bar-list">
+        {% for c in course_stats %}
+        <li>
+          <div class="bar-meta">
+            <span><strong>{{ c.code }}</strong> · {{ c.name }}</span>
+            <span class="muted">{{ c.student_count }}</span>
+          </div>
+          <div class="bar-track">
+            <progress class="bar-fill" value="{{ c.student_count }}" max="{{ max_count }}" aria-label="{{ c.name }} enrollment">
+              {{ c.student_count }} / {{ max_count }}
+            </progress>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty">No courses yet. <a href="{{ url_for('courses.create') }}">Create one →</a></p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

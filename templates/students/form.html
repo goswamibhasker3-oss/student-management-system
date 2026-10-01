@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if mode == 'edit' else 'Add' }} Student{% endblock %}
+{% block page_title %}{{ 'Edit Student' if mode == 'edit' else 'Add New Student' }}{% endblock %}
+
+{% block content %}
+<section class="card form-card">
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="form-grid">
+      <div class="field">
+        {{ form.roll_no.label }}
+        {{ form.roll_no(class="input") }}
+        {% for e in form.roll_no.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+
+      <div class="field">
+        {{ form.status.label }}
+        {{ form.status(class="input") }}
+      </div>
+
+      <div class="field">
+        {{ form.first_name.label }}
+        {{ form.first_name(class="input") }}
+        {% for e in form.first_name.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+
+      <div class="field">
+        {{ form.last_name.label }}
+        {{ form.last_name(class="input") }}
+        {% for e in form.last_name.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+
+      <div class="field">
+        {{ form.email.label }}
+        {{ form.email(class="input", type="email") }}
+        {% for e in form.email.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+
+      <div class="field">
+        {{ form.phone.label }}
+        {{ form.phone(class="input") }}
+      </div>
+
+      <div class="field">
+        {{ form.gender.label }}
+        {{ form.gender(class="input") }}
+      </div>
+
+      <div class="field">
+        {{ form.dob.label }}
+        {{ form.dob(class="input", type="date") }}
+      </div>
+
+      <div class="field full">
+        {{ form.course_id.label }}
+        {{ form.course_id(class="input") }}
+      </div>
+
+      <div class="field full">
+        {{ form.address.label }}
+        {{ form.address(class="input", rows="3") }}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('students.index') }}" class="btn btn-ghost">Cancel</a>
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+</section>
+{% endblock %}
